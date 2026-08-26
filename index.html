@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dates Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Baloo+2:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f0f7ff;
+    --card: #ffffff;
+    --blue: #7db8ff;
+    --blue-deep: #3a7bd5;
+    --sky: #a8d8ff;
+    --mint: #b8e6cf;
+    --navy: #2c3e60;
+    --ink: #3d4a5c;
+    --mute: #5b6b82;
+    --line: #e2edfb;
+    --red: #e0574c;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 10% 6%, #dceeff 0%, transparent 40%),
+      radial-gradient(circle at 92% 12%, #e4f5ec 0%, transparent 35%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Quicksand', sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 28px 14px 48px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .deck, .match, .header, .topbar, .addbar, .stats{ width: 100%; }
+  button{ font-family: inherit; cursor:pointer; }
+  input, select{ font-family: inherit; }
+
+  /* ---------- LOGIN ---------- */
+  .login-wrap{
+    width: 100%;
+    max-width: 380px;
+    margin-top: 8vh;
+    text-align:center;
+  }
+  .login-card{
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 24px;
+    padding: 32px 26px;
+    box-shadow: 0 6px 0 var(--line);
+  }
+  .login-eyebrow{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--blue-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .login-title{
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 26px;
+    color: var(--navy);
+    margin: 0 0 6px;
+  }
+  .login-sub{
+    font-size: 13.5px;
+    color: var(--mute);
+    font-weight: 500;
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+  .login-input{
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 2px solid var(--line);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    outline: none;
+    margin-bottom: 12px;
+    background: #fbfdff;
+  }
+  .login-input:focus{ border-color: var(--blue-deep); }
+  .btn-primary{
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: none;
+    background: var(--blue-deep);
+    color: #fff;
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 4px 0 #2a5da8;
+    transition: transform .1s;
+  }
+  .btn-primary:active{ transform: translateY(2px); box-shadow: 0 2px 0 #2a5da8; }
+  .login-known{
+    margin-top: 18px;
+    text-align: left;
+  }
+  .login-known-label{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--mute);
+    margin-bottom: 8px;
+  }
+  .known-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background: #eef5ff;
+    border: 1.5px solid var(--line);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px 12px;
+    border-radius: 100px;
+    margin: 0 6px 6px 0;
+  }
+  .known-chip:hover{ border-color: var(--blue-deep); }
+
+  /* ---------- APP SHELL ---------- */
+  .app{ width:100%; display:flex; flex-direction:column; align-items:center; }
+  .topbar{
+    max-width: 420px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 4px;
+  }
+  .whoami{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--mute);
+  }
+  .whoami b{ color: var(--navy); }
+  .link-btn{
+    background:none;
+    border:none;
+    color: var(--blue-deep);
+    font-weight: 700;
+    font-size: 12px;
+    font-family:'Baloo 2', sans-serif;
+    padding: 4px 0;
+    text-decoration: underline;
+  }
+
+  .header{
+    text-align:center;
+    max-width: 460px;
+    margin-bottom: 18px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--blue-deep);
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+  }
+  h1{
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: clamp(30px, 8vw, 40px);
+    line-height: 1.1;
+    margin: 0 0 10px;
+    color: var(--navy);
+  }
+  h1 span{
+    color: var(--blue-deep);
+  }
+  .tagline-wrap{
+    max-width: 280px;
+    margin: 10px auto 16px;
+    text-align: left;
+  }
+  .tagline-sender{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 11.5px;
+    color: var(--mute);
+    margin: 0 0 5px 6px;
+  }
+  .tagline-sender b{ color: var(--navy); }
+  .bubble{
+    position: relative;
+    display: inline-block;
+    background: #dcf8c6;
+    color: #1b3a1e;
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    line-height: 1.35;
+    padding: 12px 16px;
+    border-radius: 18px 18px 18px 4px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border: 1px solid #c9edb0;
+  }
+  .tagline-seen{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 500;
+    font-size: 10.5px;
+    color: #4fae5a;
+    text-align: right;
+    margin: 5px 8px 0 0;
+  }
+
+  .live-clock{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--mute);
+    margin-top: 12px;
+  }
+  .live-clock b{ color: var(--blue-deep); font-weight: 700; }
+
+  /* ---------- STATS STRIP ---------- */
+  .stats{
+    max-width: 420px;
+    display:flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-box{
+    flex:1;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    padding: 10px 8px;
+    text-align:center;
+    box-shadow: 0 4px 0 var(--line);
+  }
+  .stat-num{
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--navy);
+  }
+  .stat-label{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--mute);
+    margin-top: 2px;
+  }
+
+  /* ---------- ADD BAR ---------- */
+  .addbar{
+    max-width: 420px;
+    margin-bottom: 14px;
+  }
+  .btn-add{
+    width:100%;
+    background: #fff;
+    border: 2px dashed var(--blue);
+    color: var(--blue-deep);
+    border-radius: 18px;
+    padding: 13px;
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+  .btn-add:hover{ background:#f4f9ff; }
+
+  /* ---------- DECK / CARDS ---------- */
+  .deck{
+    width: 100%;
+    max-width: 420px;
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+  }
+  .empty-state{
+    max-width: 420px;
+    width:100%;
+    text-align:center;
+    background: var(--card);
+    border: 2px dashed var(--line);
+    border-radius: 20px;
+    padding: 30px 20px;
+    color: var(--mute);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .card{
+    position:relative;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 22px;
+    padding: 18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 16px;
+    box-shadow: 0 6px 0 var(--line);
+    transition: transform .2s;
+  }
+  .card.next{
+    border-color: var(--blue-deep);
+    box-shadow: 0 6px 0 var(--blue-deep);
+  }
+  .card.main-chick{
+    border-color: #ffc93c;
+    box-shadow: 0 6px 0 #ffc93c;
+  }
+  .card.done{
+    opacity: 0.5;
+    box-shadow: 0 6px 0 var(--line);
+  }
+  .card.done .exam-name{ text-decoration: line-through; text-decoration-color: var(--mute); }
+
+  .washi{
+    position:absolute;
+    top: -8px;
+    left: 22px;
+    width: 46px;
+    height: 16px;
+    background: var(--mint);
+    opacity: 0.8;
+    transform: rotate(-4deg);
+    border-radius: 2px;
+  }
+  .card:nth-child(2n) .washi{ background: var(--sky); left: auto; right: 22px; transform: rotate(4deg); }
+  .card:nth-child(3n) .washi{ background: #ffe1a8; }
+
+  .card-left{
+    display:flex;
+    flex-direction:column;
+    gap: 5px;
+    min-width:0;
+  }
+  .exam-name{
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .exam-date{
+    font-family:'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--navy);
+    opacity: 0.6;
+    letter-spacing: 0.02em;
+  }
+  .role-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin-top: 3px;
+    width: fit-content;
+    font-family:'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+  }
+  .role-tag.main{ color: #7a5f00; background: #fff3cf; }
+  .role-tag.side{ color: #2a5da8; background: #e2eeff; }
+  .role-tag.situationship{ color: #6a3f9e; background: #f0e6fb; }
+  .role-tag.rebound{ color: #a3441f; background: #ffe6dc; }
+  .role-tag.other{ color: #3c7a58; background: #e2f5eb; }
+
+  .quip{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--blue-deep);
+    margin-top: 1px;
+    line-height: 1.3;
+  }
+
+  .card-right{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 6px;
+    flex-shrink:0;
+  }
+
+  .countdown{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #f0f7ff;
+    border: 2px solid var(--line);
+  }
+  .card.next .countdown{
+    background: var(--blue-deep);
+    border-color: var(--blue-deep);
+  }
+  .card.main-chick .countdown{
+    background: #ffc93c;
+    border-color: #ffc93c;
+  }
+  .card.done .countdown{
+    background: #f0f7ff;
+    border-color: var(--line);
+  }
+  .count-num{
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height:1;
+    color: var(--navy);
+  }
+  .card.next .count-num, .card.main-chick .count-num{ color: #fff; }
+  .count-label{
+    font-family:'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 8px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-top: 2px;
+  }
+  .card.next .count-label, .card.main-chick .count-label{ color: #ffffffcc; }
+
+  .card-actions{
+    display:flex;
+    gap: 6px;
+  }
+  .icon-btn{
+    background: #f0f7ff;
+    border: 1.5px solid var(--line);
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    font-size: 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--mute);
+    padding:0;
+  }
+  .icon-btn:hover{ border-color: var(--blue-deep); color: var(--blue-deep); }
+  .icon-btn.danger:hover{ border-color: var(--red); color: var(--red); }
+
+  .match{
+    margin-top: 8px;
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 22px;
+    padding: 22px 22px;
+    text-align:center;
+    box-shadow: 0 6px 0 var(--line);
+  }
+  .match-heart{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--blue-deep);
+    margin-bottom: 10px;
+  }
+  .match-title{
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: var(--navy);
+  }
+  .match-title span{ color: var(--blue-deep); }
+  .match-copy{
+    color: var(--ink);
+    font-size: 13.5px;
+    line-height: 1.6;
+    max-width: 320px;
+    margin: 0 auto;
+    font-weight: 500;
+  }
+  .match-copy b{ color: var(--navy); font-weight:700; }
+
+  .footer{
+    margin-top: 22px;
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--mute);
+    text-align:center;
+    padding: 0 8px;
+  }
+  .data-tools{
+    margin-top: 14px;
+    display:flex;
+    gap: 14px;
+    justify-content:center;
+  }
+  .data-tools button{
+    background:none;
+    border:none;
+    color: var(--mute);
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 11.5px;
+    text-decoration: underline;
+    padding: 4px;
+  }
+  .data-tools button:hover{ color: var(--blue-deep); }
+  #importFile{ display:none; }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background: rgba(44,62,96,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+    z-index: 50;
+  }
+  .modal{
+    background: var(--card);
+    border-radius: 24px;
+    padding: 26px 24px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 12px 30px rgba(44,62,96,0.25);
+  }
+  .modal-title{
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--navy);
+    margin: 0 0 4px;
+  }
+  .modal-sub{
+    font-size: 12.5px;
+    color: var(--mute);
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+  .field-label{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--mute);
+    margin: 0 0 5px 2px;
+    display:block;
+  }
+  .field{
+    width:100%;
+    padding: 11px 13px;
+    border-radius: 12px;
+    border: 2px solid var(--line);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    outline:none;
+    margin-bottom: 14px;
+    background: #fbfdff;
+  }
+  .field:focus{ border-color: var(--blue-deep); }
+  select.field{ font-weight: 700; }
+  .modal-actions{
+    display:flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .btn-secondary{
+    flex:1;
+    background: #f0f7ff;
+    border: 2px solid var(--line);
+    color: var(--mute);
+    border-radius: 14px;
+    padding: 12px;
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .modal-actions .btn-primary{ flex:1.4; box-shadow: 0 4px 0 #2a5da8; }
+  .btn-delete{
+    width:100%;
+    margin-top: 10px;
+    background: #fff0ee;
+    border: 2px solid #ffd6d0;
+    color: var(--red);
+    border-radius: 14px;
+    padding: 11px;
+    font-family:'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  @media (max-width: 380px){
+    .card{ padding: 14px 14px; gap: 10px; border-radius: 18px; }
+    .exam-name{ font-size: 16.5px; }
+    .countdown{ width: 54px; height: 54px; }
+    .count-num{ font-size: 16px; }
+    .bubble{ font-size: 13.5px; padding: 10px 14px; }
+    .deck{ gap: 11px; }
+    .match{ padding: 18px 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div class="login-wrap" id="loginScreen">
+    <div class="login-card">
+      <div class="login-eyebrow">New match found</div>
+      <h2 class="login-title">Who's swiping? 👀</h2>
+      <p class="login-sub">Enter your name to start (or continue) tracking your exam "dates". Everything saves on this device only.</p>
+      <input id="loginInput" class="login-input" type="text" placeholder="your name" maxlength="24" autocomplete="off">
+      <button class="btn-primary" id="loginBtn">Let's date 💌</button>
+      <div class="login-known" id="knownWrap" style="display:none;">
+        <div class="login-known-label">Or pick up where you left off</div>
+        <div id="knownChips"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app" id="appScreen" style="display:none;">
+
+    <div class="topbar">
+      <div class="whoami">swiping as <b id="whoamiName"></b></div>
+      <button class="link-btn" id="switchBtn">switch profile</button>
+    </div>
+
+    <div class="header">
+      <div class="eyebrow">Dating is a volume game, Quantity &gt; Quality</div>
+      <h1 id="pageTitle"><span>Dates</span> Tracker</h1>
+      <div class="tagline-wrap">
+        <div class="bubble">Don't let an exam friendzone you</div>
+        <div class="tagline-seen">left on seen <span style="color:#34b7f1">✓✓</span></div>
+      </div>
+      <div class="live-clock" id="liveClock"></div>
+    </div>
+
+    <div class="stats" id="statsStrip"></div>
+
+    <div class="addbar">
+      <button class="btn-add" id="addExamBtn">+ line up a new date</button>
+    </div>
+
+    <div class="deck" id="deck"></div>
+
+    <div class="match">
+      <div class="match-heart">Relationship Status</div>
+      <div class="match-title">You &amp; <span>The Syllabus</span> — it's complicated</div>
+      <p class="match-copy">Dating advice: the more dates you go on, the better your chances of getting laid...into a government job. Don't let an exam friendzone you. Swipe left, swipe right, but mostly right.</p>
+    </div>
+
+    <div class="footer" id="footerNote"></div>
+    <div class="data-tools">
+      <button id="exportBtn">export my dates</button>
+      <button id="importBtn">import dates</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json">
+  </div>
+
+  <!-- ADD / EDIT MODAL -->
+  <div class="modal-overlay" id="modalOverlay" style="display:none;">
+    <div class="modal">
+      <h3 class="modal-title" id="modalTitle">Line up a new date</h3>
+      <p class="modal-sub" id="modalSub">Add the exam, the date, and how you'd describe... this situation.</p>
+
+      <label class="field-label">Exam name</label>
+      <input class="field" id="fName" type="text" placeholder="e.g. UPSC CSE Mains" maxlength="40">
+
+      <label class="field-label">Date</label>
+      <input class="field" id="fDate" type="date">
+
+      <label class="field-label">What are they to you?</label>
+      <select class="field" id="fRole">
+        <option value="main">the main chick</option>
+        <option value="side">the side chick</option>
+        <option value="situationship">the situationship</option>
+        <option value="rebound">the rebound ex</option>
+        <option value="other">just a friend (no label)</option>
+      </select>
+
+      <label class="field-label">Your quip about them (optional)</label>
+      <input class="field" id="fQuip" type="text" placeholder="leave blank for a random one" maxlength="60">
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="modalCancel">Cancel</button>
+        <button class="btn-primary" id="modalSave">Save</button>
+      </div>
+      <button class="btn-delete" id="modalDelete" style="display:none;">Break up with this date (delete)</button>
+    </div>
+  </div>
+
+<script>
+  /* ---------------- STORAGE ---------------- */
+  const STORE_KEY = 'datesTracker.users.v1';
+  const SESSION_KEY = 'datesTracker.activeUser.v1';
+
+  const defaultExams = [
+    { id: 'd1', name: "UPSC CDS",               date: "2026-09-13", quip: "moves fast, means nothing",             role: "other" },
+    { id: 'd2', name: "RPSC RAS",                date: "2026-12-06", quip: "the long-distance thing",               role: "other" },
+    { id: 'd3', name: "UPSC EPFO APFC",          date: "2026-12-20", quip: "strictly friends with benefits",        role: "side" },
+    { id: 'd4', name: "UPSC CSE Prelims",        date: "2027-05-23", quip: "thought of kids' names already",       role: "main" },
+    { id: 'd5', name: "MPSC Rajyaseva Prelims",  date: "2027-05-31", quip: "no labels, no plans",                   role: "situationship" },
+    { id: 'd6', name: "RBI & NABARD",            date: "2027-06-13", quip: "threesome babes",                      role: "side" },
+    { id: 'd7', name: "UPSC CAPF",               date: "2027-07-19", quip: "she's back, we're not talking about it", role: "rebound" },
+  ];
+
+  const randomQuips = [
+    "left me on read for a week",
+    "hasn't defined the relationship yet",
+    "keeps changing the plans on me",
+    "meeting the parents this one",
+    "we don't talk about the ex (last attempt)",
+    "it's giving situationship energy",
+    "she's the one my mom would like",
+  ];
+
+  function loadAllUsers(){
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+  function saveAllUsers(users){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(users)); }
+    catch(e){ /* storage unavailable (e.g. private mode) - fails silently */ }
+  }
+  function keyFor(name){ return name.trim().toLowerCase(); }
+
+  let allUsers = loadAllUsers();
+  let activeUser = null;   // display name
+  let activeKey = null;    // lowercase key
+
+  function ensureUser(displayName){
+    const k = keyFor(displayName);
+    if(!allUsers[k]){
+      allUsers[k] = {
+        displayName: displayName.trim(),
+        exams: (k === 'shikhar') ? JSON.parse(JSON.stringify(defaultExams)) : []
+      };
+      saveAllUsers(allUsers);
+    }
+    return k;
+  }
+
+  function currentExams(){ return allUsers[activeKey] ? allUsers[activeKey].exams : []; }
+  function setCurrentExams(list){
+    allUsers[activeKey].exams = list;
+    saveAllUsers(allUsers);
+  }
+
+  /* ---------------- LOGIN SCREEN ---------------- */
+  const loginScreen = document.getElementById('loginScreen');
+  const appScreen = document.getElementById('appScreen');
+  const loginInput = document.getElementById('loginInput');
+  const knownWrap = document.getElementById('knownWrap');
+  const knownChips = document.getElementById('knownChips');
+
+  function renderKnownUsers(){
+    const keys = Object.keys(allUsers);
+    if(!keys.length){ knownWrap.style.display = 'none'; return; }
+    knownWrap.style.display = 'block';
+    knownChips.innerHTML = '';
+    keys.forEach(k => {
+      const chip = document.createElement('button');
+      chip.className = 'known-chip';
+      chip.type = 'button';
+      chip.innerHTML = '💬 ' + allUsers[k].displayName;
+      chip.addEventListener('click', () => login(allUsers[k].displayName));
+      knownChips.appendChild(chip);
+    });
+  }
+
+  function login(name){
+    if(!name || !name.trim()) return;
+    activeKey = ensureUser(name);
+    activeUser = allUsers[activeKey].displayName;
+    localStorage.setItem(SESSION_KEY, activeUser);
+    loginScreen.style.display = 'none';
+    appScreen.style.display = 'flex';
+    document.getElementById('whoamiName').textContent = activeUser;
+    document.getElementById('pageTitle').innerHTML = activeUser + "'s <span>Dates</span> Tracker";
+    render();
+  }
+
+  function logout(){
+    localStorage.removeItem(SESSION_KEY);
+    activeUser = null;
+    activeKey = null;
+    loginInput.value = '';
+    allUsers = loadAllUsers();
+    renderKnownUsers();
+    appScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', () => login(loginInput.value));
+  loginInput.addEventListener('keydown', e => { if(e.key === 'Enter') login(loginInput.value); });
+  document.getElementById('switchBtn').addEventListener('click', logout);
+
+  /* ---------------- RENDER ---------------- */
+  const roleLabel = {
+    main: "the main chick",
+    side: "the side chick",
+    situationship: "the situationship",
+    rebound: "the rebound ex",
+    other: null
+  };
+
+  function fmtDate(d){
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+  }
+
+  function withComputed(){
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return currentExams().map(e => {
+      const d = new Date(e.date + "T00:00:00");
+      const diffDays = Math.round((d - startOfToday) / 86400000);
+      return { ...e, dateObj: d, diffDays };
+    }).sort((a,b) => a.dateObj - b.dateObj);
+  }
+
+  function renderStats(withDays){
+    const upcoming = withDays.filter(e => e.diffDays >= 0);
+    const done = withDays.filter(e => e.diffDays < 0);
+    const next = upcoming[0];
+    const strip = document.getElementById('statsStrip');
+    strip.innerHTML = `
+      <div class="stat-box"><div class="stat-num">${upcoming.length}</div><div class="stat-label">currently seeing</div></div>
+      <div class="stat-box"><div class="stat-num">${next ? next.diffDays : '—'}</div><div class="stat-label">days to next date</div></div>
+      <div class="stat-box"><div class="stat-num">${done.length}</div><div class="stat-label">been on</div></div>
+    `;
+  }
+
+  function render(){
+    if(!activeKey) return;
+    const withDays = withComputed();
+    renderStats(withDays);
+
+    const upcoming = withDays.filter(e => e.diffDays >= 0);
+    const nextId = upcoming.length ? upcoming.slice().sort((a,b)=>a.diffDays-b.diffDays)[0].id : null;
+
+    const deck = document.getElementById('deck');
+    deck.innerHTML = '';
+
+    if(!withDays.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.innerHTML = "no dates lined up yet 🥲<br>tap \"line up a new date\" to add your first exam.";
+      deck.appendChild(empty);
+      document.getElementById('footerNote').textContent = "today is " + fmtDate(new Date()).toLowerCase() + " — add something to prep for!";
+      return;
+    }
+
+    withDays.forEach(e => {
+      const isNext = e.id === nextId;
+      const isDone = e.diffDays < 0;
+      const isMain = e.role === 'main';
+      const card = document.createElement('div');
+      card.className = 'card'
+        + (isNext ? ' next' : '')
+        + (isMain && !isDone ? ' main-chick' : '')
+        + (isDone ? ' done' : '');
+
+      const quipLine = isDone
+        ? "we've already been on this date 💅"
+        : (isNext && !isMain ? "not taking her to IMA ball party" : e.quip);
+
+      const roleTagHtml = (e.role !== 'other' && !isDone)
+        ? `<span class="role-tag ${e.role}">${roleLabel[e.role]}</span>`
+        : '';
+
+      card.innerHTML = `
+        <div class="washi"></div>
+        <div class="card-left">
+          <div class="exam-name">${e.name}</div>
+          <div class="exam-date">${fmtDate(e.dateObj)}</div>
+          ${roleTagHtml}
+          <div class="quip">${quipLine}</div>
+        </div>
+        <div class="card-right">
+          <div class="countdown">
+            <div class="count-num">${isDone ? '🎀' : e.diffDays}</div>
+            <div class="count-label">${isDone ? 'done' : 'days'}</div>
+          </div>
+          <div class="card-actions">
+            <button class="icon-btn" title="edit" data-edit="${e.id}">✎</button>
+            <button class="icon-btn danger" title="delete" data-del="${e.id}">✕</button>
+          </div>
+        </div>
+      `;
+      deck.appendChild(card);
+    });
+
+    deck.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => openModal(btn.getAttribute('data-edit')));
+    });
+    deck.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if(confirm('Break up with this date? This deletes it for good.')){
+          setCurrentExams(currentExams().filter(x => x.id !== btn.getAttribute('data-del')));
+          render();
+        }
+      });
+    });
+
+    document.getElementById('footerNote').textContent =
+      "today is " + fmtDate(new Date()).toLowerCase() + ", give some mock tests maybe?";
+  }
+
+  function tickClock(){
+    const now = new Date();
+    const el = document.getElementById('liveClock');
+    if(el){
+      el.innerHTML = "right now, at <b>" + now.toLocaleTimeString('en-GB') + "</b>, you should be preparing for your dates";
+    }
+  }
+
+  /* ---------------- ADD / EDIT MODAL ---------------- */
+  const modalOverlay = document.getElementById('modalOverlay');
+  const fName = document.getElementById('fName');
+  const fDate = document.getElementById('fDate');
+  const fRole = document.getElementById('fRole');
+  const fQuip = document.getElementById('fQuip');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSub = document.getElementById('modalSub');
+  const modalDelete = document.getElementById('modalDelete');
+  let editingId = null;
+
+  function openModal(editId){
+    editingId = editId || null;
+    if(editingId){
+      const e = currentExams().find(x => x.id === editingId);
+      modalTitle.textContent = "Edit this date";
+      modalSub.textContent = "Things change. Update the details below.";
+      fName.value = e.name;
+      fDate.value = e.date;
+      fRole.value = e.role;
+      fQuip.value = e.quip;
+      modalDelete.style.display = 'block';
+    } else {
+      modalTitle.textContent = "Line up a new date";
+      modalSub.textContent = "Add the exam, the date, and how you'd describe... this situation.";
+      fName.value = '';
+      fDate.value = '';
+      fRole.value = 'other';
+      fQuip.value = '';
+      modalDelete.style.display = 'none';
+    }
+    modalOverlay.style.display = 'flex';
+    setTimeout(() => fName.focus(), 50);
+  }
+  function closeModal(){ modalOverlay.style.display = 'none'; editingId = null; }
+
+  document.getElementById('addExamBtn').addEventListener('click', () => openModal(null));
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', e => { if(e.target === modalOverlay) closeModal(); });
+
+  document.getElementById('modalSave').addEventListener('click', () => {
+    const name = fName.value.trim();
+    const date = fDate.value;
+    if(!name || !date){ alert('Give it at least a name and a date.'); return; }
+    const quip = fQuip.value.trim() || randomQuips[Math.floor(Math.random()*randomQuips.length)];
+    const role = fRole.value;
+
+    let list = currentExams();
+    if(editingId){
+      list = list.map(x => x.id === editingId ? { ...x, name, date, role, quip } : x);
+    } else {
+      const id = 'e' + Date.now();
+      list = [...list, { id, name, date, role, quip }];
+    }
+    setCurrentExams(list);
+    closeModal();
+    render();
+  });
+
+  modalDelete.addEventListener('click', () => {
+    if(!editingId) return;
+    if(confirm('Break up with this date? This deletes it for good.')){
+      setCurrentExams(currentExams().filter(x => x.id !== editingId));
+      closeModal();
+      render();
+    }
+  });
+
+  /* ---------------- EXPORT / IMPORT ---------------- */
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const payload = { displayName: activeUser, exams: currentExams() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (activeKey || 'dates') + '-tracker-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  const importFile = document.getElementById('importFile');
+  document.getElementById('importBtn').addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', () => {
+    const file = importFile.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const data = JSON.parse(reader.result);
+        if(!Array.isArray(data.exams)) throw new Error('bad file');
+        setCurrentExams(data.exams);
+        render();
+        alert('Dates imported!');
+      }catch(e){
+        alert("That file doesn't look like a valid backup.");
+      }
+    };
+    reader.readAsText(file);
+    importFile.value = '';
+  });
+
+  /* ---------------- BOOT ---------------- */
+  renderKnownUsers();
+  const lastUser = localStorage.getItem(SESSION_KEY);
+  if(lastUser && loadAllUsers()[keyFor(lastUser)]){
+    login(lastUser);
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+  setInterval(() => { if(activeKey) render(); }, 60 * 1000);
+</script>
+
+</body>
+</html>
